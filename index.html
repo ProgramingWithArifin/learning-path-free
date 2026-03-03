@@ -1,1 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Full Stack Dev Playlist</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --card: #1a1a28;
+    --border: #2a2a40;
+    --accent: #7c3aed;
+    --accent2: #06b6d4;
+    --accent3: #f59e0b;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --done: #10b981;
+  }
 
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Sora', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated background */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at 20% 20%, rgba(124,58,237,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(6,182,212,0.06) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 50px;
+    animation: fadeDown 0.6s ease;
+  }
+
+  .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 700;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #fff 30%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 15px;
+    font-weight: 300;
+  }
+
+  /* Progress bar */
+  .progress-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    animation: fadeUp 0.6s ease 0.1s both;
+  }
+
+  .progress-info { flex: 1; }
+  .progress-label {
+    font-size: 13px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    margin-bottom: 8px;
+  }
+  .progress-bar-wrap {
+    height: 8px;
+    background: var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    width: 0%;
+    transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+  }
+  .progress-count {
+    font-family: 'Space Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent2);
+    white-space: nowrap;
+  }
+
+  /* Phase tabs */
+  .phase-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    animation: fadeUp 0.6s ease 0.2s both;
+  }
+
+  .phase-tab {
+    padding: 8px 18px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-family: 'Sora', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .phase-tab:hover { border-color: var(--accent); color: var(--text); }
+  .phase-tab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  /* Phase section */
+  .phase {
+    display: none;
+    animation: fadeUp 0.4s ease;
+  }
+  .phase.active { display: block; }
+
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .phase-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .phase-title {
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .phase-desc {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* Video cards */
+  .video-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
+
+  .video-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .video-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent);
+    transform: scaleY(0);
+    transition: transform 0.2s;
+  }
+
+  .video-card:hover {
+    border-color: var(--accent);
+    transform: translateX(4px);
+    box-shadow: 0 0 20px rgba(124,58,237,0.15);
+  }
+  .video-card:hover::before { transform: scaleY(1); }
+  .video-card.completed { border-color: var(--done); opacity: 0.75; }
+  .video-card.completed::before { background: var(--done); transform: scaleY(1); }
+
+  .video-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    min-width: 28px;
+    text-align: center;
+  }
+
+  .video-thumb {
+    width: 52px;
+    height: 36px;
+    border-radius: 8px;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .video-info { flex: 1; }
+  .video-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+  .video-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .video-channel {
+    font-size: 12px;
+    color: var(--accent2);
+    font-family: 'Space Mono', monospace;
+  }
+  .video-duration {
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--surface);
+    padding: 2px 8px;
+    border-radius: 6px;
+  }
+
+  .video-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-watch {
+    background: linear-gradient(135deg, var(--accent), #9333ea);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-size: 12px;
+    font-family: 'Sora', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .btn-watch:hover { transform: scale(1.05); box-shadow: 0 4px 15px rgba(124,58,237,0.4); }
+
+  .check-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 2px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .check-btn:hover { border-color: var(--done); background: rgba(16,185,129,0.1); }
+  .video-card.completed .check-btn {
+    border-color: var(--done);
+    background: rgba(16,185,129,0.2);
+    color: var(--done);
+  }
+
+  /* Project cards */
+  .projects-section { margin-top: 8px; }
+  .projects-title {
+    font-size: 14px;
+    font-family: 'Space Mono', monospace;
+    color: var(--accent3);
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .projects-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .project-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+
+  .project-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
+  }
+  .project-card:hover {
+    border-color: var(--accent3);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(245,158,11,0.12);
+  }
+  .project-card.done { border-color: var(--done); }
+
+  .project-emoji { font-size: 24px; margin-bottom: 10px; }
+  .project-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .project-diff {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-family: 'Space Mono', monospace;
+    display: inline-block;
+  }
+  .diff-easy { background: rgba(16,185,129,0.15); color: var(--done); }
+  .diff-medium { background: rgba(245,158,11,0.15); color: var(--accent3); }
+  .diff-hard { background: rgba(239,68,68,0.15); color: #ef4444; }
+
+  .project-check {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    border: 2px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    transition: all 0.2s;
+  }
+  .project-card.done .project-check {
+    border-color: var(--done);
+    background: rgba(16,185,129,0.2);
+    color: var(--done);
+  }
+
+  /* Tip box */
+  .tip-box {
+    background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(6,182,212,0.08));
+    border: 1px solid rgba(124,58,237,0.3);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-top: 20px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .tip-box strong { color: var(--accent2); }
+
+  @keyframes fadeDown { from { opacity:0; transform:translateY(-20px) } to { opacity:1; transform:translateY(0) } }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(20px) } to { opacity:1; transform:translateY(0) } }
+
+  @media (max-width: 600px) {
+    .video-card { flex-wrap: wrap; }
+    .video-actions { width: 100%; justify-content: flex-end; }
+    .project-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="badge">📺 Video Learning Path</div>
+    <h1>Full Stack Dev<br>Playlist 2025</h1>
+    <p class="subtitle">Complete beginner → Job-ready developer • Step-by-step order</p>
+  </header>
+
+  <div class="progress-section">
+    <div class="progress-info">
+      <div class="progress-label">OVERALL PROGRESS</div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progressFill"></div>
+      </div>
+    </div>
+    <div class="progress-count" id="progressCount">0 / 0</div>
+  </div>
+
+  <div class="phase-tabs">
+    <button class="phase-tab active" onclick="showPhase(0)">① HTML & CSS</button>
+    <button class="phase-tab" onclick="showPhase(1)">② JavaScript</button>
+    <button class="phase-tab" onclick="showPhase(2)">③ React</button>
+    <button class="phase-tab" onclick="showPhase(3)">④ Backend</button>
+    <button class="phase-tab" onclick="showPhase(4)">⑤ Database</button>
+    <button class="phase-tab" onclick="showPhase(5)">⑥ Full Projects</button>
+  </div>
+
+  <!-- PHASE 1 -->
+  <div class="phase active" id="phase-0">
+    <div class="phase-header">
+      <div class="phase-icon" style="background:rgba(239,68,68,0.15);">🎨</div>
+      <div>
+        <div class="phase-title">Phase 1 — HTML & CSS</div>
+        <div class="phase-desc">Build the visual skeleton of any website</div>
+      </div>
+    </div>
+    <div class="video-list">
+      <div class="video-card" id="v1">
+        <span class="video-num">01</span>
+        <div class="video-thumb">📄</div>
+        <div class="video-info">
+          <div class="video-title">HTML Full Course – Build a Website Tutorial</div>
+          <div class="video-meta">
+            <span class="video-channel">freeCodeCamp</span>
+            <span class="video-duration">2h 15m</span>
+          </div>
+        </div>
+        <div class="video-actions">
+          <a class="btn-watch" href="https://www.youtube.com/watch?v=pQN-pnXPaVg" target="_blank">▶ Watch</a>
+          <button class="check-btn" onclick="toggleVideo('v1')">✓</button>
+        </div>
+      </div>
+      <div class="video-card" id="v2">
+        <span class="video-num">02</span>
+        <div class="video-thumb">🎨</div>
+        <div class="video-info">
+          <div class="video-title">CSS Tutorial – Zero to Hero (Complete Course)</div>
+          <div class="video-meta">
+            <span class="video-channel">freeCodeCamp</span>
+            <span class="video-duration">6h 18m</span>
+          </div>
+        </div>
+        <div class="video-actions">
+          <a class="btn-watch" href="https://www.youtube.com/watch?v=1Rs2ND1ryYc" target="_blank">▶ Watch</a>
+          <button class="check-btn" onclick="toggleVideo('v2')">✓</button>
+        </div>
+      </div>
+      <div class="video-card" id="v3">
+        <span class="video-num">03</span>
+        <div class="video-thumb">📐</div>
+        <div class="video-info">
+          <div class="video-title">CSS Flexbox in 20 Minutes</div>
+          <div class="video-meta">
+            <span class="video-channel">Traversy Media</span>
+            <span class="video-duration">20m</span>
+          </div>
+        </div>
+        <div class="video-actions">
+          <a class="btn-watch" href="https://www.youtube.com/watch?v=JJSoEo8JSnc" target="_blank">▶ Watch</a>
+          <button class="check-btn" onclick="toggleVideo('v3')">✓</button>
+        </div>
+      </div>
+      <div class="video-card" id="v4">
+        <span class="video-num">04</span>
+        <div class="video-thumb">📱</div>
+        <div class="video-info">
+          <div class="video-title">CSS Grid Layout Crash Course</div>
+          <div class="video-meta">
+            <span class="video-channel">Traversy Media</span>
+            <span class="video-duration">28m</span>
+          </div>
+        </div>
+        <div class="video-actions">
+          <a class="btn-watch" href="https://www.youtube.com/watch?v=jV8B24rSN5o" target="_blank">▶ Watch</a>
+          <button class="check-btn" onclick="toggleVideo('v4')">✓</button>
+        </div>
+      </div>
+      <div class="video-card" id="v5">
+        <span class="video-num">05</span>
+        <div class="video-thumb">📱</div>
+        <div class="video-info">
+          <div class="video-title">Build a Responsive Website – HTML, CSS (Kevin Powell)</div>
+          <div class="video-meta">
+            <span class="video-channel">Kevin Powell</span>
+            <span class="video-duration">~3h (series)</span>
+          </div>
+        </div>
+        <div class="video-actions">
+          <a class="btn-watch" href="https://www.youtube.com/watch?v=bn-DQCifeQQ" target="_blank">▶ Watch</a>
+          <button class="check-btn" onclick="toggleVideo('v5')">✓</button>
+        </div>
+      </div>
+    </div>
+    <div class="projects-section">
+      <div class="projects-title">🔨 Practice Projects</div>
+      <div class="project-grid">
+        <div class="project-card" id="p1">
+          <button class="project-check" onclick="toggleProject('p1')">✓</button>
+          <div class="project-emoji">👤</div>
+          <div class="project-name">Personal Portfolio Page</div>
+          <span class="project-diff diff-easy">Easy</span>
+        </div>
+        <div class="project-card" id="p2">
+          <button class="project-check" onclick="toggleProject('p2')">✓</button>
+          <div class="project-emoji">🍕</div>
+          <div class="project-name">Restaurant Landing Page</div>
+          <span class="project-diff diff-easy">Easy</span>
+        </div>
+        <div class="project-card" id="p3">
+          <button class="project-check" onclick="toggleProject('p3')">✓</button>
+          <div class="project-emoji">📰</div>
+          <div class="project-name">Blog Layout (CSS Grid)</div>
+          <span class="project-diff diff-medium">Medium</span>
+        </div>
+      </div>
+    </div>
+    <div class="tip-box">💡 <strong>Tip:</strong> After every video, close it and try to recreate what you saw from memory. Getting stuck is part of learning — Google is your friend!</div>
+  </div>
+
+  <!-- PHASE 2 -->
+  <div class="phase" id="phase-1">
+    <div class="phase-header">
+      <div class="phase-icon" style="background:rgba(245,158,11,0.15);">⚡</div>
+      <div>
+        <div class="phase-title">Phase 2 — JavaScript</div>
+        <div class="phase-desc">Make websites interactive and dynamic</div>
+      </div>
+    </div>
+    <div class="video-list">
+      <div class="video-card" id="v6">
+        <span class="video-num">06</span>
+        <div class="video-thumb">⚡</div>
+        <div class="video-info">
+          <div class="video-title">JavaScript Tutorial for Beginners – Full Course</div>
+          <div class="video-meta">
+            <span class="video-channel">Programming with Mosh</span>
+            <span class="video-duration">3h 21m</span>
+          </div>
+        </div>
+        <div class="video-actions">
+          <a class="btn-watch" href="https://www.youtube.com/watch?v=W6NZfCO5SIk" target="_blank">▶ Watch</a>
+          <button class="check-btn" onclick="toggleVideo('v6')">✓</button>
+        </div>
+      </div>
+      <div class="video-card" id="v7">
+        <span class="video-num">07</span>
+        <div class="video-thumb">🌐</div>
+        <div class="video-info">
+          <div class="video-title">JavaScript DOM Manipulation – Full Course</div>
+          <div class="video-meta">
+            <span class="video-channel">freeCodeCamp</span>
+            <span class="video-duration">5h 30m</span>
+          </div>
+        </div>
+        <div class="video-actions">
+          <a class="btn-watch" href="https://www.youtube.com/watch?v=5fb2aPlgoys" target="_blank">▶ Watch</a>
+          <button class="check-btn" onclick="toggleVideo('v7')">✓</button>
+        </div>
+      </div>
+      <div class="video-card" id="v8">
+        <span class="video-num">08</span>
+        <div class="video-thumb">🔄</div>
+        <div class="video-info">
+          <div class="video-title">Async JavaScript – Callbacks, Promises, Async/Await</div>
+          <div class="video-meta">
+            <span class="video-channel">Web Dev Simplified</span>
+            <span class="video-duration">25m</span>
+          </div>
+        </div>
+        <div class="video-actions">
+          <a class="btn-watch" href="https://www.youtube.com/watch?v=DHvZLI7Db8E" target="_blank">▶ Watch</a>
+          <button class="check-btn" onclick="toggleVideo('v8')">✓</button>
+        </div>
+      </div>
+      <div class="video-card" id="v9">
+        <span class="video-num">09</span>
+        <div class="video-thumb">🌍</div>
+        <div class="video-info">
+          <div class="video-title">Fetch API & AJAX (XHR) – Crash Course</div>
+          <div class="video-meta">
+            <span class="video-channel">Traversy Media</span>
+            <span class="video-duration">32m</span>
+          </div>
+        </div>
+        <div class="video-actions">
+          <a class="btn-watch" href="https://www.youtube.com/watch?v=Oive66jrwBs" target="_blank">▶ Watch</a>
+          <button class="check-btn" onclick="toggleVideo('v9')">✓</button>
+        </div>
+      </div>
+    </div>
+    <div class="projects-section">
+      <div class="projects-title">🔨 Practice Projects</div>
+      <div class="project-grid">
+        <div class="project-card" id="p4">
+          <button class="project-check" onclick="toggleProject('p4')">✓</button>
+          <div class="project-emoji">🧮</div>
+          <div class="project-name">Calculator App</div>
+          <span class="project-diff diff-easy">Easy</span>
+        </div>
+        <div class="project-card" id="p5">
+          <button class="project-check" onclick="toggleProject('p5')">✓</button>
+          <div class="project-emoji">☁️</div>
+          <div class="project-name">Weather App (API)</div>
+          <span class="project-diff diff-medium">Medium</span>
+        </div>
+        <div class="project-card" id="p6">
+          <button class="project-check" onclick="toggleProject('p6')">✓</button>
+          <div class="project-emoji">✅</div>
+          <div class="project-name">Todo List App</div>
+          <span class="project-diff diff-medium">Medium</span>
+        </div>
+        <div class="project-card" id="p7">
+          <button class="project-check" onclick="toggleProject('p7')">✓</button>
+          <div class="project-emoji">🎬</div>
+          <div class="project-name">Movie Search App</div>
+          <span class="project-diff diff-hard">Hard</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 3 -->
+  <div class="phase" id="phase-2">
+    <div class="phase-header">
+      <div class="phase-icon" style="background:rgba(6,182,212,0.15);">⚛️</div>
+      <div>
+        <div class="phase-title">Phase 3 — React</div>
+        <div class="phase-desc">Build fast, modern frontend apps</div>
+      </div>
+    </div>
+    <div class="video-list">
+      <div class="video-card" id="v10">
+        <span class="video-num">10</span>
+        <div class="video-thumb">⚛️</div>
+        <div class="video-info">
+          <div class="video-title">React JS Full Course for Beginners</div>
+          <div class="video-meta">
+            <span class="video-channel">Dave Gray</span>
+            <span class="video-duration">9h 49m</span>
+          </div>
+        </div>
+        <div class="video-actions">
+          <a class="btn-watch" href="https://www.youtube.com/watch?v=RVFAyFWO4go" target="_blank">▶ Watch</a>
+          <button class="check-btn" onclick="toggleVideo('v10')">✓</button>
+        </div>
+      </div>
+      <div class="video-card" id="v11">
+        <span class="video-num">11</span>
+        <div class="video-thumb">🪝</div>
+        <div class="video-info">
+          <div class="video-title">React Hooks – useEffect & useState</div>
+          <div class="video-meta">
+            <span class="video-channel">Web Dev Simplified</span>
+            <span class="video-duration">14m</span>
+          </div>
+        </div>
+        <div class="video-actions">
+          <a class="btn-watch" href="https://www.youtube.com/watch?v=O6P86uwfdR0" target="_blank">▶ Watch</a>
+          <button class="check-btn" onclick="toggleVideo('v11')">✓</button>
+        </div>
+      </div>
+      <div class="video-card" id="v12">
+        <span class="video-num">12</span>
+        <div class="video-thumb">🔀</div>
+        <div class="video-info">
+          <div class="video-title">React Router v6 Tutorial</div>
+          <div class="video-meta">
+            <span class="video-channel">Net Ninja</span>
+            <span class="video-duration">~2h (playlist)</span>
+          </div>
+        </div>
+        <div class="video-actions">
+          <a class="btn-watch" href="https://www.youtube.com/watch?v=Ul3y1LXxzdU" target="_blank">▶ Watch</a>
+          <button class="check-btn" onclick="toggleVideo('v12')">✓</button>
+        </div>
+      </div>
+    </div>
+    <div class="projects-section">
+      <div class="projects-title">🔨 Practice Projects</div>
+      <div class="project-grid">
+        <div class="project-card" id="p8">
+          <button class="project-check" onclick="toggleProject('p8')">✓</button>
+          <div class="project-emoji">📰</div>
+          <div class="project-name">News Feed App</div>
+          <span class="project-diff diff-medium">Medium</span>
+        </div>
+        <div class="project-card" id="p9">
+          <button class="project-check" onclick="toggleProject('p9')">✓</button>
+          <div class="project-emoji">🛒</div>
+          <div class="project-name">Shopping Cart</div>
+          <span class="project-diff diff-hard">Hard</span>
+        </div>
+        <div class="project-card" id="p10">
+          <button class="project-check" onclick="toggleProject('p10')">✓</button>
+          <div class="project-emoji">📊</div>
+          <div class="project-name">Dashboard UI</div>
+          <span class="project-diff diff-hard">Hard</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 4 -->
+  <div class="phase" id="phase-3">
+    <div class="phase-header">
+      <div class="phase-icon" style="background:rgba(16,185,129,0.15);">🖥️</div>
+      <div>
+        <div class="phase-title">Phase 4 — Backend (Node.js)</div>
+        <div class="phase-desc">Build servers, APIs and handle logic</div>
+      </div>
+    </div>
+    <div class="video-list">
+      <div class="video-card" id="v13">
+        <span class="video-num">13</span>
+        <div class="video-thumb">🟢</div>
+        <div class="video-info">
+          <div class="video-title">Node.js & Express – Full Course (Beginner)</div>
+          <div class="video-meta">
+            <span class="video-channel">Dave Gray</span>
+            <span class="video-duration">8h 16m</span>
+          </div>
+        </div>
+        <div class="video-actions">
+          <a class="btn-watch" href="https://www.youtube.com/watch?v=Oe421EPjeBE" target="_blank">▶ Watch</a>
+          <button class="check-btn" onclick="toggleVideo('v13')">✓</button>
+        </div>
+      </div>
+      <div class="video-card" id="v14">
+        <span class="video-num">14</span>
+        <div class="video-thumb">🔐</div>
+        <div class="video-info">
+          <div class="video-title">Node.js Authentication (JWT, Cookies)</div>
+          <div class="video-meta">
+            <span class="video-channel">Web Dev Simplified</span>
+            <span class="video-duration">40m</span>
+          </div>
+        </div>
+        <div class="video-actions">
+          <a class="btn-watch" href="https://www.youtube.com/watch?v=mbsmsi7l3r4" target="_blank">▶ Watch</a>
+          <button class="check-btn" onclick="toggleVideo('v14')">✓</button>
+        </div>
+      </div>
+      <div class="video-card" id="v15">
+        <span class="video-num">15</span>
+        <div class="video-thumb">🔌</div>
+        <div class="video-info">
+          <div class="video-title">REST API Design Best Practices</div>
+          <div class="video-meta">
+            <span class="video-channel">Web Dev Simplified</span>
+            <span class="video-duration">36m</span>
+          </div>
+        </div>
+        <div class="video-actions">
+          <a class="btn-watch" href="https://www.youtube.com/watch?v=-MTSQjw5DrM" target="_blank">▶ Watch</a>
+          <button class="check-btn" onclick="toggleVideo('v15')">✓</button>
+        </div>
+      </div>
+    </div>
+    <div class="projects-section">
+      <div class="projects-title">🔨 Practice Projects</div>
+      <div class="project-grid">
+        <div class="project-card" id="p11">
+          <button class="project-check" onclick="toggleProject('p11')">✓</button>
+          <div class="project-emoji">📋</div>
+          <div class="project-name">REST API for Todo App</div>
+          <span class="project-diff diff-medium">Medium</span>
+        </div>
+        <div class="project-card" id="p12">
+          <button class="project-check" onclick="toggleProject('p12')">✓</button>
+          <div class="project-emoji">🔐</div>
+          <div class="project-name">User Auth System</div>
+          <span class="project-diff diff-hard">Hard</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 5 -->
+  <div class="phase" id="phase-4">
+    <div class="phase-header">
+      <div class="phase-icon" style="background:rgba(124,58,237,0.15);">🗄️</div>
+      <div>
+        <div class="phase-title">Phase 5 — Database</div>
+        <div class="phase-desc">Store, query and manage data</div>
+      </div>
+    </div>
+    <div class="video-list">
+      <div class="video-card" id="v16">
+        <span class="video-num">16</span>
+        <div class="video-thumb">🍃</div>
+        <div class="video-info">
+          <div class="video-title">MongoDB Tutorial for Beginners – Full Course</div>
+          <div class="video-meta">
+            <span class="video-channel">freeCodeCamp</span>
+            <span class="video-duration">2h 22m</span>
+          </div>
+        </div>
+        <div class="video-actions">
+          <a class="btn-watch" href="https://www.youtube.com/watch?v=c2M-rlkkT5o" target="_blank">▶ Watch</a>
+          <button class="check-btn" onclick="toggleVideo('v16')">✓</button>
+        </div>
+      </div>
+      <div class="video-card" id="v17">
+        <span class="video-num">17</span>
+        <div class="video-thumb">🔗</div>
+        <div class="video-info">
+          <div class="video-title">Mongoose Crash Course – MongoDB & Node.js</div>
+          <div class="video-meta">
+            <span class="video-channel">Web Dev Simplified</span>
+            <span class="video-duration">28m</span>
+          </div>
+        </div>
+        <div class="video-actions">
+          <a class="btn-watch" href="https://www.youtube.com/watch?v=DZBGEVgL2eE" target="_blank">▶ Watch</a>
+          <button class="check-btn" onclick="toggleVideo('v17')">✓</button>
+        </div>
+      </div>
+    </div>
+    <div class="projects-section">
+      <div class="projects-title">🔨 Practice Projects</div>
+      <div class="project-grid">
+        <div class="project-card" id="p13">
+          <button class="project-check" onclick="toggleProject('p13')">✓</button>
+          <div class="project-emoji">📚</div>
+          <div class="project-name">Book Library CRUD</div>
+          <span class="project-diff diff-medium">Medium</span>
+        </div>
+        <div class="project-card" id="p14">
+          <button class="project-check" onclick="toggleProject('p14')">✓</button>
+          <div class="project-emoji">🛍️</div>
+          <div class="project-name">Product DB + API</div>
+          <span class="project-diff diff-hard">Hard</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 6 -->
+  <div class="phase" id="phase-5">
+    <div class="phase-header">
+      <div class="phase-icon" style="background:rgba(239,68,68,0.15);">🚀</div>
+      <div>
+        <div class="phase-title">Phase 6 — Full Stack Projects</div>
+        <div class="phase-desc">Combine everything — build & deploy real apps</div>
+      </div>
+    </div>
+    <div class="video-list">
+      <div class="video-card" id="v18">
+        <span class="video-num">18</span>
+        <div class="video-thumb">🛒</div>
+        <div class="video-info">
+          <div class="video-title">MERN Stack E-Commerce – Full Project</div>
+          <div class="video-meta">
+            <span class="video-channel">Traversy Media</span>
+            <span class="video-duration">12h (series)</span>
+          </div>
+        </div>
+        <div class="video-actions">
+          <a class="btn-watch" href="https://www.youtube.com/watch?v=CDtPMR5y0QU" target="_blank">▶ Watch</a>
+          <button class="check-btn" onclick="toggleVideo('v18')">✓</button>
+        </div>
+      </div>
+      <div class="video-card" id="v19">
+        <span class="video-num">19</span>
+        <div class="video-thumb">☁️</div>
+        <div class="video-info">
+          <div class="video-title">Deploy a MERN App to Render (Free Hosting)</div>
+          <div class="video-meta">
+            <span class="video-channel">JavaScript Mastery</span>
+            <span class="video-duration">45m</span>
+          </div>
+        </div>
+        <div class="video-actions">
+          <a class="btn-watch" href="https://www.youtube.com/watch?v=l134cBAJCuc" target="_blank">▶ Watch</a>
+          <button class="check-btn" onclick="toggleVideo('v19')">✓</button>
+        </div>
+      </div>
+      <div class="video-card" id="v20">
+        <span class="video-num">20</span>
+        <div class="video-thumb">🐙</div>
+        <div class="video-info">
+          <div class="video-title">Git & GitHub Crash Course – For Beginners</div>
+          <div class="video-meta">
+            <span class="video-channel">Traversy Media</span>
+            <span class="video-duration">32m</span>
+          </div>
+        </div>
+        <div class="video-actions">
+          <a class="btn-watch" href="https://www.youtube.com/watch?v=SWYqp7iY_Tc" target="_blank">▶ Watch</a>
+          <button class="check-btn" onclick="toggleVideo('v20')">✓</button>
+        </div>
+      </div>
+    </div>
+    <div class="projects-section">
+      <div class="projects-title">🏆 Capstone Projects — Build These for Your Portfolio!</div>
+      <div class="project-grid">
+        <div class="project-card" id="p15">
+          <button class="project-check" onclick="toggleProject('p15')">✓</button>
+          <div class="project-emoji">💬</div>
+          <div class="project-name">Full Stack Chat App</div>
+          <span class="project-diff diff-hard">Hard</span>
+        </div>
+        <div class="project-card" id="p16">
+          <button class="project-check" onclick="toggleProject('p16')">✓</button>
+          <div class="project-emoji">📝</div>
+          <div class="project-name">Blog Platform (CRUD + Auth)</div>
+          <span class="project-diff diff-hard">Hard</span>
+        </div>
+        <div class="project-card" id="p17">
+          <button class="project-check" onclick="toggleProject('p17')">✓</button>
+          <div class="project-emoji">🛒</div>
+          <div class="project-name">Mini E-Commerce Store</div>
+          <span class="project-diff diff-hard">Hard</span>
+        </div>
+      </div>
+    </div>
+    <div class="tip-box">🎉 <strong>You made it!</strong> At this point, put your projects on GitHub and deploy them. These projects = your portfolio. Start applying for jobs or freelance gigs. The journey continues — but you're now a full stack developer!</div>
+  </div>
+
+</div>
+
+<script>
+  const TOTAL_VIDEOS = 20;
+  const TOTAL_PROJECTS = 17;
+
+  function loadState() {
+    try {
+      return JSON.parse(sessionStorage.getItem('fsState') || '{}');
+    } catch { return {}; }
+  }
+
+  function saveState(s) {
+    try { sessionStorage.setItem('fsState', JSON.stringify(s)); } catch {}
+  }
+
+  let state = loadState();
+
+  function toggleVideo(id) {
+    state[id] = !state[id];
+    saveState(state);
+    document.getElementById(id).classList.toggle('completed', state[id]);
+    updateProgress();
+  }
+
+  function toggleProject(id) {
+    state[id] = !state[id];
+    saveState(state);
+    document.getElementById(id).classList.toggle('done', state[id]);
+    updateProgress();
+  }
+
+  function updateProgress() {
+    let done = 0;
+    for (let i = 1; i <= 20; i++) if (state['v' + i]) done++;
+    for (let i = 1; i <= 17; i++) if (state['p' + i]) done++;
+    const total = TOTAL_VIDEOS + TOTAL_PROJECTS;
+    const pct = Math.round((done / total) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressCount').textContent = done + ' / ' + total;
+  }
+
+  function restoreState() {
+    for (let i = 1; i <= 20; i++) {
+      if (state['v' + i]) document.getElementById('v' + i)?.classList.add('completed');
+    }
+    for (let i = 1; i <= 17; i++) {
+      if (state['p' + i]) document.getElementById('p' + i)?.classList.add('done');
+    }
+    updateProgress();
+  }
+
+  function showPhase(idx) {
+    document.querySelectorAll('.phase').forEach((p, i) => p.classList.toggle('active', i === idx));
+    document.querySelectorAll('.phase-tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+  }
+
+  restoreState();
+</script>
+</body>
+</html>
